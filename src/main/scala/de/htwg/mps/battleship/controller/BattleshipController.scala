@@ -32,7 +32,7 @@ class BattleshipController(var players: List[IPlayer]) {
 
     players = for (player <- players) yield { if (currentPlayer == player) currentPlayer.updateShips(ships) else player }
 
-    val available: List[Ship] = for (ship <- ships if !ship.initialized) yield ship
+    val available = for (ship <- ships if !ship.initialized) yield ship
     if (available.length == 0) turn += 1
 
     true
@@ -50,9 +50,8 @@ class BattleshipController(var players: List[IPlayer]) {
   }
 
   private def isAlreadySet(fieldList: List[Field], ships: List[Ship]): Boolean = {
-    val set = for (ship <- ships; pos <- ship.pos if fieldList.contains(pos)) yield ship
-    //    set.length == 0
-    true
+    val set : List[Boolean] = ships.flatMap(ship => ship.pos.flatMap(pos => fieldList.map(field => field eq pos)))
+    !set.contains(true)
   }
 
   private def transformShipList(fieldList: List[Field]): List[Ship] = {

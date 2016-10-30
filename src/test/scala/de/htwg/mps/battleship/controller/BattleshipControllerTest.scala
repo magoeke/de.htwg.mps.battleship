@@ -64,13 +64,18 @@ class BattleshipControllerTest extends WordSpec {
         c.turn should equal(2)
       }
 
-      //      "can't set a ship on taken fields" in {
-      //        val c = new BattleshipController(BattleshipControllerTest.setupTest)
-      //        c.setShip(Point(1, 1), Point(2, 1))
-      //        val old_gamefield = c.players(0)
-      //        c.setShip(Point(1, 1), Point(1, 2))
-      //        //        c.turn should equal(0)
-      //      }
+      "can't set a ship on taken fields" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest)
+        c.setShip(Point(1, 1), Point(2, 1))
+        val old_gamefield = c.players(0)
+        c.setShip(Point(1, 1), Point(1, 2))
+        c.turn should equal(0)
+        c.setShip(Point(2, 1), Point(2, 2))
+        c.turn should equal(0)
+        c.setShip(Point(4, 1), Point(4, 2))
+        c.turn should equal(1)
+        
+      }
 
     }
   }
