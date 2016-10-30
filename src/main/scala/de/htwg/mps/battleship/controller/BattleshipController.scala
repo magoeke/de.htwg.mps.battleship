@@ -82,6 +82,8 @@ class BattleshipController(var players: List[IPlayer]) {
     else if(!shipField && field.shot) FieldState.MISS
     else FieldState.EMPTY
   }
+  
+  def setableShips = for(ship <- currentPlayer.getGamefield.ships if !ship.initialized) yield ship
 
   def createPoint(x: Int, y: Int) = new Point(x, y)
   def currentPlayer = players(turn % players.length)

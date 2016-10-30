@@ -37,6 +37,8 @@ class TUI(val controller: BattleshipController) {
 
   def printTUI = {
     printGamefield(controller.gamefieldView)
+    println(controller.currentPlayer.getName)
+    println(controller.setableShips.mkString)
     println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
   }
   
