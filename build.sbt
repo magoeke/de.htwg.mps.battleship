@@ -17,3 +17,5 @@ libraryDependencies ++= {
 
 
 fork in run := true
+//  http://stackoverflow.com/questions/29538779/scala-stdin-readline-does-not-seem-to-work-as-expected
+connectInput in run := true
