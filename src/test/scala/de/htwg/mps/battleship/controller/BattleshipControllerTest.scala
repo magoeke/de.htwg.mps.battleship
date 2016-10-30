@@ -67,14 +67,21 @@ class BattleshipControllerTest extends WordSpec {
       "can't set a ship on taken fields" in {
         val c = new BattleshipController(BattleshipControllerTest.setupTest)
         c.setShip(Point(1, 1), Point(2, 1))
-        val old_gamefield = c.players(0)
         c.setShip(Point(1, 1), Point(1, 2))
         c.turn should equal(0)
         c.setShip(Point(2, 1), Point(2, 2))
         c.turn should equal(0)
         c.setShip(Point(4, 1), Point(4, 2))
         c.turn should equal(1)
-        
+      }
+      
+      "fire only if all ships are set" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest)
+        c.setShip(Point(1, 1), Point(2, 1))
+        val old_player = c.players(0)
+        c.fire(Point(1,1))
+        old_player eq c.players(0) should be (true)
+        c.turn should equal(0)
       }
 
     }

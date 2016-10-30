@@ -20,9 +20,12 @@ class BattleshipController(var players: List[IPlayer]) {
     }
   }
 
-  def fire(point: Point) = {
-    // TODO: check if all ships are set
-    players = for (player <- players) yield (if (player != currentPlayer) player.fire(point) else player)
+  def fire(point: Point): Boolean = {
+    // break up method if user has ships left that need to be setted
+    if(setableShips.length != 0) {
+      players = for (player <- players) yield (if (player != currentPlayer) player.fire(point) else player)
+    }
+    true
   }
 
   def setShip(start: Point, end: Point) = {
@@ -83,7 +86,6 @@ class BattleshipController(var players: List[IPlayer]) {
   }
   
   def setableShips = for(ship <- currentPlayer.getGamefield.ships if !ship.initialized) yield ship
-
   def createPoint(x: Int, y: Int) = new Point(x, y)
   def currentPlayer = players(turn % players.length)
 }
