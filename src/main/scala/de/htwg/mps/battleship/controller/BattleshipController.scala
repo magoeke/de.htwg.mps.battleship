@@ -14,16 +14,16 @@ class BattleshipController(var players: List[IPlayer]) {
       case QuitGame() => false
       case Nothing() => true
       case NewGame() => true
-      case Fire(point) => true
+      case Fire(point) => fire(point)
       case SetShip(start, end) => setShip(start, end)
       case _ => true
     }
   }
 
   def fire(point: Point): Boolean = {
-    // break up method if user has ships left that need to be setted
-    if(setableShips.length != 0) {
+    if(setableShips.length == 0) {
       players = for (player <- players) yield (if (player != currentPlayer) player.fire(point) else player)
+      turn+=1
     }
     true
   }

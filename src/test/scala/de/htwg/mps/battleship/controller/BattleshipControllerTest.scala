@@ -42,7 +42,7 @@ class BattleshipControllerTest extends WordSpec {
     "all" should {
 
       "handle commands right" in {
-        val c = new BattleshipController(BattleshipControllerTest.setupTest)
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(2))
         c.handleCommand(NewGame()) should be(true)
         c.handleCommand(Nothing()) should be(true)
         c.handleCommand(Fire(Point(1, 1))) should be(true)
@@ -51,7 +51,7 @@ class BattleshipControllerTest extends WordSpec {
       }
 
       "set a ship on free position" in {
-        val c = new BattleshipController(BattleshipControllerTest.setupTest)
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(2))
         val old_gamefield = c.players(0)
         c.setShip(Point(1, 1), Point(2, 1))
         (c.players(0) == old_gamefield) should be(false)
@@ -65,7 +65,7 @@ class BattleshipControllerTest extends WordSpec {
       }
 
       "can't set a ship on taken fields" in {
-        val c = new BattleshipController(BattleshipControllerTest.setupTest)
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(2))
         c.setShip(Point(1, 1), Point(2, 1))
         c.setShip(Point(1, 1), Point(1, 2))
         c.turn should equal(0)
@@ -76,12 +76,16 @@ class BattleshipControllerTest extends WordSpec {
       }
       
       "fire only if all ships are set" in {
-        val c = new BattleshipController(BattleshipControllerTest.setupTest)
-        c.setShip(Point(1, 1), Point(2, 1))
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
         val old_player = c.players(0)
         c.fire(Point(1,1))
         old_player eq c.players(0) should be (true)
         c.turn should equal(0)
+        // set ships for both players
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.fire(Point(1,1))
+        c.turn should equal(3)
       }
 
     }
@@ -89,9 +93,9 @@ class BattleshipControllerTest extends WordSpec {
 }
 
 object BattleshipControllerTest {
-  def setupTest: List[Player] = {
+  def setupTest(nships: Int): List[Player] = {
     val size = 10
-    val ships = List(Ship(2), Ship(2))
+    val ships = (0 until nships).map(_ => Ship(2)).toList
     val gamefield = Gamefield(Array.fill[Field](size, size) { Field(false) }, ships)
     List(Player(gamefield, "player0"), Player(gamefield, "player1"))
   }
