@@ -74,18 +74,43 @@ class BattleshipControllerTest extends WordSpec {
         c.setShip(Point(4, 1), Point(4, 2))
         c.turn should equal(1)
       }
-      
+
       "fire only if all ships are set" in {
         val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
         val old_player = c.players(0)
-        c.fire(Point(1,1))
-        old_player eq c.players(0) should be (true)
+        c.fire(Point(1, 1))
+        old_player eq c.players(0) should be(true)
         c.turn should equal(0)
         // set ships for both players
         c.setShip(Point(1, 1), Point(2, 1))
         c.setShip(Point(1, 1), Point(2, 1))
-        c.fire(Point(1,1))
+        c.fire(Point(1, 1))
         c.turn should equal(3)
+      }
+
+      "doesn't find a winner when no ships are set" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
+        c.getWinner.isEmpty should be(true)
+      }
+
+      "doesn't find a winner when not allships of an player are dead" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.fire(Point(1, 1))
+        c.fire(Point(1, 1))
+        c.getWinner.isEmpty should be(true)
+      }
+
+      "find a winner when only one player is left" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
+        println("---------------------")
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.setShip(Point(1, 1), Point(2, 1))
+        c.fire(Point(1, 1))
+        c.fire(Point(1, 1))
+        c.fire(Point(2, 1))
+        c.getWinner.isEmpty should be(false)
       }
 
     }

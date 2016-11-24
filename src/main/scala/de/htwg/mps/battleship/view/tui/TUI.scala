@@ -14,7 +14,6 @@ class TUI(val controller: BattleshipController) {
   printTUI
 
   def handleInput(input: String): Boolean = {
-    //tui.handleInput("new")
     val result = controller.handleCommand(input match {
       case "new" => NewGame()
       case "quit" => QuitGame()
@@ -22,13 +21,6 @@ class TUI(val controller: BattleshipController) {
       case FirePattern() => Fire(getPoint(input))
       case _ => Nothing()
     })
-
-    if (controller.checkWinCondition()) {
-      println(controller.currentPlayer.getName + " Wins!")
-      return false
-    } else {
-      controller.nextRound()
-    }
 
     printTUI
     result
@@ -49,6 +41,8 @@ class TUI(val controller: BattleshipController) {
     println(controller.currentPlayer.getName)
     println(controller.setableShips.mkString)
     println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
+    val winner = controller.getWinner
+    if (!winner.isEmpty) println("Winner is " + winner.get)
   }
 
   def printGamefield(gamefield: Array[Array[FieldState.Value]]) = {
