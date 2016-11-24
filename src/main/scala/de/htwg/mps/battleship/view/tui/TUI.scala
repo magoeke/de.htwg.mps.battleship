@@ -1,11 +1,10 @@
 package de.htwg.mps.battleship.view.tui
 
-import de.htwg.mps.battleship.controller.BattleshipController
-import de.htwg.mps.battleship.controller.FieldState
+import de.htwg.mps.battleship.controller.{FieldState, IBattleshipController}
 import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model.Point
 
-class TUI(val controller: BattleshipController) {
+class TUI(val controller: IBattleshipController) {
 
   val SetPattern = "set\\s+\\d+,\\d+\\s+end\\s+\\d+,\\d+".r
   val FirePattern = "fire\\s+\\d+,\\d+".r
@@ -33,16 +32,19 @@ class TUI(val controller: BattleshipController) {
 
   def getPoint(s: String): Point = {
     val coords = NumberPattern.findFirstIn(s).get.split(",")
-    controller.createPoint(coords(0).toInt, coords(1).toInt)
+    Point(coords(0).toInt, coords(1).toInt)
   }
 
   def printTUI : Unit = {
-    printGamefield(controller.gamefieldView)
+    controller.boardsView.map(printGamefield(_))
     println(controller.currentPlayer.name)
     println(controller.setableShips.mkString)
-    println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
     val winner = controller.getWinner
-    if (winner.isDefined) println("Winner is " + winner.get)
+    if (winner.isDefined) {
+      println("Winner is " + winner.get.name)
+    } else {
+      println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
+    }
   }
 
   def printGamefield(gamefield: Array[Array[FieldState.Value]]) : Unit= {
@@ -58,10 +60,5 @@ ${gamefield.map(row => row.map(state => fieldStateToString(state) + " ").mkStrin
       case FieldState.MISS => "o"
       case FieldState.SHIP => "s"
     }
-  }
-
-  // TODO: not used yet
-  def update = {
-    println("Output")
   }
 }
