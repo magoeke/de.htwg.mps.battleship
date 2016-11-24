@@ -1,5 +1,5 @@
-name          := "htwg-scala-seed"
-organization  := "de.htwg.se"
+name          := "htwg-scala-battleship"
+organization  := "de.htwg.mps"
 version       := "0.0.1"
 scalaVersion  := "2.11.8"
 scalacOptions := Seq("-unchecked", "-feature", "-deprecation", "-encoding", "utf8")
@@ -15,6 +15,7 @@ libraryDependencies ++= {
   )
 }
 
+libraryDependencies += "org.scala-lang" % "scala-swing" % "2.10+"
 
 fork in run := true
 //  http://stackoverflow.com/questions/29538779/scala-stdin-readline-does-not-seem-to-work-as-expected
