@@ -6,9 +6,10 @@ import de.htwg.mps.battleship.controller.command._
 import scala.collection.mutable.ListBuffer
 import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
-class BattleshipController(var players: List[IPlayer]) extends IBattleshipController{
-  require(players.length >= 2, "Number of player must be greater or equals two!")
+class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController{
+  require(start_players.length >= 2, "Number of player must be greater or equals two!")
 
+  var players = start_players
   var turn = 0
   var losers = List[IPlayer]()
 
@@ -16,11 +17,18 @@ class BattleshipController(var players: List[IPlayer]) extends IBattleshipContro
     command match {
       case QuitGame() => false
       case Nothing() => true
-      case NewGame() => true
+      case NewGame() => reset
       case Fire(point) => fire(point)
       case SetShip(start, end) => setShip(start, end)
       case _ => true
     }
+  }
+
+  def reset : Boolean = {
+    players = start_players
+    turn = 0
+    losers = List[IPlayer]()
+    true
   }
 
   /*
