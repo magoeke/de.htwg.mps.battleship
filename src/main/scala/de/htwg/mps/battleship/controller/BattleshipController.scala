@@ -23,8 +23,6 @@ class BattleshipController(var players: List[IPlayer]) {
     }
   }
 
-  //def nextRound() { if (setableShips.length == 0) turn += 1 }
-
   /*
    * Bombardes all enemy ships @point.
    */
