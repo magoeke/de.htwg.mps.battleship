@@ -28,30 +28,30 @@ class TUI(val controller: BattleshipController) {
 
   def getPoints(s: String): (Point, Point) = {
     val commands = s.split("end")
-    new Tuple2(getPoint(commands(0)), getPoint(commands(1)))
+    Tuple2(getPoint(commands(0)), getPoint(commands(1)))
   }
 
   def getPoint(s: String): Point = {
-    val coords = (NumberPattern.findFirstIn(s)).get.split(",")
+    val coords = NumberPattern.findFirstIn(s).get.split(",")
     controller.createPoint(coords(0).toInt, coords(1).toInt)
   }
 
-  def printTUI = {
+  def printTUI : Unit = {
     printGamefield(controller.gamefieldView)
-    println(controller.currentPlayer.getName)
+    println(controller.currentPlayer.name)
     println(controller.setableShips.mkString)
     println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
     val winner = controller.getWinner
-    if (!winner.isEmpty) println("Winner is " + winner.get)
+    if (winner.isDefined) println("Winner is " + winner.get)
   }
 
-  def printGamefield(gamefield: Array[Array[FieldState.Value]]) = {
+  def printGamefield(gamefield: Array[Array[FieldState.Value]]) : Unit= {
     println(s"""
 ${gamefield.map(row => row.map(state => fieldStateToString(state) + " ").mkString + "\n").mkString}  
   """)
   }
 
-  def fieldStateToString(state: FieldState.Value) = {
+  def fieldStateToString(state: FieldState.Value) : String= {
     state match {
       case FieldState.EMPTY => "-"
       case FieldState.HIT => "X"

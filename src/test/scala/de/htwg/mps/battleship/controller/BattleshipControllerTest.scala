@@ -2,11 +2,12 @@ package de.htwg.mps.battleship.controller
 
 import org.scalatest._
 import org.scalatest.Matchers._
-
 import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model.Point
 import de.htwg.mps.battleship.model.IPlayer
 import de.htwg.mps.battleship.model._
+
+import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
 class BattleshipControllerTest extends WordSpec {
 
@@ -121,7 +122,7 @@ object BattleshipControllerTest {
   def setupTest(nships: Int): List[Player] = {
     val size = 10
     val ships = (0 until nships).map(_ => Ship(2)).toList
-    val gamefield = Gamefield(Array.fill[Field](size, size) { Field(false) }, ships)
+    val gamefield = Gamefield(Array.fill[IField](size, size) { Field(false) }, ships)
     List(Player(gamefield, "player0"), Player(gamefield, "player1"))
   }
 }
