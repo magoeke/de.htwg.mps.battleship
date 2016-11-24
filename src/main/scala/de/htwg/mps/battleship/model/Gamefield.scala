@@ -2,7 +2,7 @@ package de.htwg.mps.battleship.model
 
 case class Gamefield(field: Array[Array[Field]], ships: List[Ship]) {
 
-  override def toString: String = "Gamefield( field.dimension="+field.length+", ships.length=" + ships.length + " )"
+  override def toString: String = "Gamefield( field.dimension=" + field.length + ", ships.length=" + ships.length + " )"
 
   def fire(point: Point): Gamefield = {
     val newF = Field(true)

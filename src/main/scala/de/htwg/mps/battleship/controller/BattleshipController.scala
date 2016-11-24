@@ -20,10 +20,11 @@ class BattleshipController(var players: List[IPlayer]) {
     }
   }
 
+  def nextRound(){if (setableShips.length == 0) turn += 1}
+
   def fire(point: Point): Boolean = {
-    if(setableShips.length == 0) {
+    if (setableShips.length == 0) {
       players = for (player <- players) yield (if (player != currentPlayer) player.fire(point) else player)
-      turn+=1
     }
     true
   }
@@ -33,11 +34,9 @@ class BattleshipController(var players: List[IPlayer]) {
     val old_ships = currentPlayer.getGamefield.ships
     val ships = if (isAlreadySet(fieldList, old_ships)) transformShipList(fieldList) else old_ships
 
-    players = for (player <- players) yield { if (currentPlayer == player) currentPlayer.updateShips(ships) else player }
-
-    val available = for (ship <- ships if !ship.initialized) yield ship
-    if (available.length == 0) turn += 1
-
+    players = for (player <- players) yield {
+      if (currentPlayer == player) currentPlayer.updateShips(ships) else player
+    }
     true
   }
 
@@ -53,7 +52,7 @@ class BattleshipController(var players: List[IPlayer]) {
   }
 
   private def isAlreadySet(fieldList: List[Field], ships: List[Ship]): Boolean = {
-    val set : List[Boolean] = ships.flatMap(ship => ship.pos.flatMap(pos => fieldList.map(field => field eq pos)))
+    val set: List[Boolean] = ships.flatMap(ship => ship.pos.flatMap(pos => fieldList.map(field => field eq pos)))
     !set.contains(true)
   }
 
@@ -69,31 +68,42 @@ class BattleshipController(var players: List[IPlayer]) {
       }
     }
   }
-  
+
   def gamefieldView = {
     val gamefield = currentPlayer.getGamefield
     gamefield.field.map(row => row.map(field => chooseFieldState(gamefield.ships, field)))
   }
-  
+
   private def chooseFieldState(ships: List[Ship], field: Field) = {
     val shipFieldL = ships.flatMap(ship => ship.pos.map(pos => pos eq field))
     val shipField = shipFieldL.contains(true)
-    
-    if(shipField && field.shot) FieldState.HIT
-    else if(shipField && !field.shot) FieldState.SHIP
-    else if(!shipField && field.shot) FieldState.MISS
+
+    if (shipField && field.shot) FieldState.HIT
+    else if (shipField && !field.shot) FieldState.SHIP
+    else if (!shipField && field.shot) FieldState.MISS
     else FieldState.EMPTY
   }
-  
-  def setableShips = for(ship <- currentPlayer.getGamefield.ships if !ship.initialized) yield ship
+
+  def setableShips = for (ship <- currentPlayer.getGamefield.ships if !ship.initialized) yield ship
+
   def createPoint(x: Int, y: Int) = new Point(x, y)
+
   def currentPlayer = players(turn % players.length)
+
+  def checkWinCondition(): Boolean = {
+    for (player <- players) {
+      if (player != currentPlayer)
+        return (for (ship <- player.getGamefield.ships if !ship.initialized || !ship.isDead) yield ship).length == 0
+    }
+    false
+  }
+
 }
 
 object BattleshipController {
   def setupGame: List[Player] = {
     val size = 10
-    val ships = List(Ship(2), Ship(2), Ship(2), Ship(2), Ship(3), Ship(3), Ship(3), Ship(4), Ship(4), Ship(5));
+    val ships = List(Ship(2),Ship(2),Ship(2),Ship(2),Ship(3),Ship(3),Ship(3),Ship(4),Ship(4),Ship(5))
     val gamefield = Gamefield(Array.fill[Field](size, size) { Field(false) }, ships)
     List(Player(gamefield, "player0"), Player(gamefield, "player1"))
   }

@@ -11,6 +11,7 @@ object Battleship {
   val tui = new TUI(c)
 
   def main(args: Array[String]) {
-    while (tui.handleInput(readLine())) {}
+    while (tui.handleInput(readLine())) {
+    }
   }
 }
