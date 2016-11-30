@@ -1,7 +1,7 @@
 package de.htwg.mps.battleship
 
 import akka.actor.{ActorSystem, Props}
-import de.htwg.mps.battleship.controller.{ControllerActor, ControllerFactory}
+import de.htwg.mps.battleship.controller.{ControllerFactory}
 import de.htwg.mps.battleship.model.{IField, IPlayer}
 import de.htwg.mps.battleship.view.tui.TUI
 
@@ -12,7 +12,7 @@ object Battleship {
   def main(args: Array[String]) {
     val actorSystem = ActorSystem.create("battleship")
     val controller = ControllerFactory.create(actorSystem, setUp())
-    actorSystem.actorOf(Props(new TUI(controller)))
+    actorSystem.actorOf(Props(new TUI(controller, true)))
     println("Started Game")
   }
 
