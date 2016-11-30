@@ -10,7 +10,7 @@ case object RegisterUI
 case object DeregisterUI
 
 class ControllerActor(val players: List[IPlayer]) extends Actor {
-  val controller = new BattleshipController(players)
+  val controller: IBattleshipController = new BattleshipController(players)
   val userInterfaces = new ListBuffer[ActorRef]()
 
   override def receive: Receive = {

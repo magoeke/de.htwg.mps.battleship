@@ -1,17 +1,17 @@
 package de.htwg.mps.battleship
 
-import akka.actor.{ ActorSystem, Props }
-import de.htwg.mps.battleship.controller.{ ControllerActor }
-import de.htwg.mps.battleship.model.{ IField, IPlayer }
+import akka.actor.{ActorSystem, Props}
+import de.htwg.mps.battleship.controller.{ControllerActor, ControllerFactory}
+import de.htwg.mps.battleship.model.{IField, IPlayer}
 import de.htwg.mps.battleship.view.tui.TUI
 
-import scala.de.htwg.mps.battleship.model.impl.{ Field, Gamefield, Player, Ship }
+import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
 object Battleship {
 
   def main(args: Array[String]) {
     val actorSystem = ActorSystem.create("battleship")
-    val controller = actorSystem.actorOf(Props(new ControllerActor(setUp())))
+    val controller = ControllerFactory.create(actorSystem, setUp())
     actorSystem.actorOf(Props(new TUI(controller)))
     println("Started Game")
   }
