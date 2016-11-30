@@ -18,7 +18,11 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
     case DeregisterUI => userInterfaces -= sender()
     case command: Command => controller.handleCommand(command) match {
       case true => userInterfaces.foreach(_ ! createUpdateUI())
-      case _ => context.system.terminate()
+      case _ => {
+        val winner = controller.getWinner
+        if(winner.isDefined) { userInterfaces.foreach(_ ! winner.get.name) }
+        context.system.terminate()
+      }
     }
   }
 

@@ -13,7 +13,7 @@ class TUI(val controller: ActorRef) extends Actor {
 
   override def receive: Receive = {
     case infos: UpdateUI => update(infos)
-    //TODO: winner
+    case winner: String => println(winner + " won!")
   }
 
   val SetPattern = "set\\s+\\d+,\\d+\\s+end\\s+\\d+,\\d+".r

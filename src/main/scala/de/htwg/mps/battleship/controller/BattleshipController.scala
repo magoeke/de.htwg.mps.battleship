@@ -6,6 +6,8 @@ import de.htwg.mps.battleship.model._
 import scala.collection.mutable.ListBuffer
 import scala.de.htwg.mps.battleship.model.impl.{ Field, Gamefield, Player, Ship }
 
+object TurnCount extends Enumeration { val INC, QUIT = Value }
+
 class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController {
   require(start_players.length >= 2, "Number of player must be greater or equals two!")
 
@@ -18,10 +20,16 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
       case QuitGame() => false
       case Nothing() => true
       case NewGame() => reset
-      case Fire(point) => fire(point)
-      case SetShip(start, end) => setShip(start, end)
+      case Fire(point) => countTurn(fire(point))
+      case SetShip(start, end) => countTurn(setShip(start, end))
       case _ => true
     }
+  }
+
+  private def countTurn(state: Any) = state match {
+    case TurnCount.INC => turn += 1; true
+    case TurnCount.QUIT => false
+    case _ => true
   }
 
   def reset: Boolean = {
@@ -34,16 +42,15 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
   /*
    * Bombardes all enemy ships @point.
    */
-  private def fire(point: Point): Boolean = {
+  private def fire(point: Point) = {
     if (setableShips.isEmpty) {
       players = for (player <- players) yield { if (player != currentPlayer) player.fire(point) else player }
       players = removeDeadPlayers
-      turn += 1
+      if (getWinner.isDefined) TurnCount.QUIT else TurnCount.INC
     }
-    if (getWinner.isDefined) false else true
   }
 
-  private def setShip(start: Point, end: Point): Boolean = {
+  private def setShip(start: Point, end: Point) = {
     val fieldList = if (start.x > start.x) getShipPos(end, start) else if (start.y > end.y) getShipPos(end, start) else getShipPos(start, end)
     val old_ships = currentPlayer.board.ships
     val ships = if (isAlreadySet(fieldList, old_ships)) transformShipList(fieldList) else old_ships
@@ -51,8 +58,7 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
     players = for (player <- players) yield { if (currentPlayer == player) currentPlayer.updateShips(ships) else player }
 
     val available = for (ship <- ships if !ship.initialized) yield ship
-    if (available.length == 0) turn += 1
-    true
+    if (available.isEmpty) TurnCount.INC
   }
 
   /*
