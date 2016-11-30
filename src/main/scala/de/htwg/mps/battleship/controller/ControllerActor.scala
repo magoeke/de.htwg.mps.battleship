@@ -1,6 +1,6 @@
 package de.htwg.mps.battleship.controller
 
-import akka.actor.{ Actor, ActorRef }
+import akka.actor.{Actor, ActorRef, Kill}
 import de.htwg.mps.battleship.controller.command.Command
 import de.htwg.mps.battleship.model.IPlayer
 
@@ -14,11 +14,17 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
   val userInterfaces = new ListBuffer[ActorRef]()
 
   override def receive: Receive = {
-    case RegisterUI => userInterfaces += sender(); sender() ! controller.boardsView
+    case RegisterUI => userInterfaces += sender(); sender() ! createUpdateUI()
     case DeregisterUI => userInterfaces -= sender()
     case command: Command => controller.handleCommand(command) match {
-      case true => userInterfaces.foreach(_ ! controller.boardsView)
-      case _ => userInterfaces.foreach(_ ! controller.boardsView)
+      case true => userInterfaces.foreach(_ ! createUpdateUI())
+      case _ => context.system.terminate()
     }
   }
+
+  private def createUpdateUI() = {
+    UpdateUI(controller.currentPlayer.name, controller.setableShips.toString(), controller.boardsView)
+  }
 }
+
+case class UpdateUI(playerName: String, setableShips: String, boards: List[Array[Array[FieldState.Value]]])

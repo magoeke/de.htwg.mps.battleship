@@ -1,7 +1,7 @@
 package de.htwg.mps.battleship.view.tui
 
 import akka.actor.{Actor, ActorRef}
-import de.htwg.mps.battleship.controller.{FieldState, IBattleshipController, RegisterUI}
+import de.htwg.mps.battleship.controller._
 import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model.Point
 
@@ -12,16 +12,19 @@ class TUI(val controller: ActorRef) extends Actor {
   controller ! RegisterUI
 
   override def receive: Receive = {
-    case boards: List[Array[Array[FieldState.Value]]] => update(boards)
+    case infos: UpdateUI => update(infos)
+    //TODO: winner
   }
 
   val SetPattern = "set\\s+\\d+,\\d+\\s+end\\s+\\d+,\\d+".r
   val FirePattern = "fire\\s+\\d+,\\d+".r
   val NumberPattern = "\\d+,\\d+".r
 
-  def update(boards: List[Array[Array[FieldState.Value]]]): Unit = {
-    boards.foreach(printGamefield(_))
-    println("Command: ")
+  def update(infos: UpdateUI): Unit = {
+    infos.boards.foreach(printGamefield(_))
+    println("Playername: " + infos.playerName)
+    println("SetableShips: " + infos.setableShips)
+    println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
     controller ! getCommand(StdIn.readLine())
   }
 
