@@ -1,28 +1,38 @@
 package de.htwg.mps.battleship.view.tui
 
-import de.htwg.mps.battleship.controller.{FieldState, IBattleshipController}
+import akka.actor.{Actor, ActorRef}
+import de.htwg.mps.battleship.controller.{FieldState, IBattleshipController, RegisterUI}
 import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model.Point
 
-class TUI(val controller: IBattleshipController) {
+import scala.io.StdIn
+
+class TUI(val controller: ActorRef) extends Actor {
+
+  controller ! RegisterUI
+
+  override def receive: Receive = {
+    case boards: List[Array[Array[FieldState.Value]]] => update(boards)
+  }
 
   val SetPattern = "set\\s+\\d+,\\d+\\s+end\\s+\\d+,\\d+".r
   val FirePattern = "fire\\s+\\d+,\\d+".r
   val NumberPattern = "\\d+,\\d+".r
 
-  printTUI
+  def update(boards: List[Array[Array[FieldState.Value]]]): Unit = {
+    boards.foreach(printGamefield(_))
+    println("Command: ")
+    controller ! getCommand(StdIn.readLine())
+  }
 
-  def handleInput(input: String): Boolean = {
-    val result = controller.handleCommand(input match {
+  def getCommand(input: String): Command = {
+    input match {
       case "new" => NewGame()
       case "quit" => QuitGame()
       case SetPattern() => getPoints(input) match { case (p1: Point, p2: Point) => SetShip(p1, p2) }
       case FirePattern() => Fire(getPoint(input))
       case _ => Nothing()
-    })
-
-    printTUI
-    result
+    }
   }
 
   def getPoints(s: String): (Point, Point) = {
@@ -35,25 +45,13 @@ class TUI(val controller: IBattleshipController) {
     Point(coords(0).toInt, coords(1).toInt)
   }
 
-  def printTUI : Unit = {
-    controller.boardsView.map(printGamefield(_))
-    println(controller.currentPlayer.name)
-    println(controller.setableShips.mkString)
-    val winner = controller.getWinner
-    if (winner.isDefined) {
-      println("Winner is " + winner.get.name)
-    } else {
-      println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
-    }
-  }
-
-  def printGamefield(gamefield: Array[Array[FieldState.Value]]) : Unit= {
+  def printGamefield(gamefield: Array[Array[FieldState.Value]]): Unit = {
     println(s"""
-${gamefield.map(row => row.map(state => fieldStateToString(state) + " ").mkString + "\n").mkString}  
+${gamefield.map(row => row.map(state => fieldStateToString(state) + " ").mkString + "\n").mkString}
   """)
   }
 
-  def fieldStateToString(state: FieldState.Value) : String= {
+  def fieldStateToString(state: FieldState.Value): String = {
     state match {
       case FieldState.EMPTY => "-"
       case FieldState.HIT => "X"

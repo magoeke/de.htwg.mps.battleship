@@ -1,12 +1,12 @@
 package de.htwg.mps.battleship.controller
 
-import de.htwg.mps.battleship.model._
 import de.htwg.mps.battleship.controller.command._
+import de.htwg.mps.battleship.model._
 
 import scala.collection.mutable.ListBuffer
-import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
+import scala.de.htwg.mps.battleship.model.impl.{ Field, Gamefield, Player, Ship }
 
-class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController{
+class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController {
   require(start_players.length >= 2, "Number of player must be greater or equals two!")
 
   var players = start_players
@@ -24,7 +24,7 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
     }
   }
 
-  def reset : Boolean = {
+  def reset: Boolean = {
     players = start_players
     turn = 0
     losers = List[IPlayer]()
@@ -43,7 +43,7 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
     if (getWinner.isDefined) false else true
   }
 
-  private def setShip(start: Point, end: Point) : Boolean = {
+  private def setShip(start: Point, end: Point): Boolean = {
     val fieldList = if (start.x > start.x) getShipPos(end, start) else if (start.y > end.y) getShipPos(end, start) else getShipPos(start, end)
     val old_ships = currentPlayer.board.ships
     val ships = if (isAlreadySet(fieldList, old_ships)) transformShipList(fieldList) else old_ships
@@ -93,14 +93,14 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
   /*
    * Represents state of all boards with enums.
    */
-  def boardsView : List[Array[Array[FieldState.Value]]] = {
+  def boardsView: List[Array[Array[FieldState.Value]]] = {
     players.map(p => p.board.field.map(row => row.map(field => chooseFieldState(p.board.ships, field, p))))
   }
 
   /*
    * Represents the current field on board as an enumeration.
    */
-  private def chooseFieldState(ships: List[IShip], field: IField, player: IPlayer) : FieldState.Value = {
+  private def chooseFieldState(ships: List[IShip], field: IField, player: IPlayer): FieldState.Value = {
     val shipFieldL = ships.flatMap(ship => ship.pos.map(pos => pos eq field))
     val shipField = shipFieldL.contains(true)
 
@@ -110,10 +110,10 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
     else { FieldState.EMPTY }
   }
 
-  def setableShips : List[IShip] = for (ship <- currentPlayer.board.ships if !ship.initialized) yield ship
-  def currentPlayer : IPlayer = players(turn % players.length)
+  def setableShips: List[IShip] = for (ship <- currentPlayer.board.ships if !ship.initialized) yield ship
+  def currentPlayer: IPlayer = players(turn % players.length)
 
-  private def removeDeadPlayers : List[IPlayer] = {
+  private def removeDeadPlayers: List[IPlayer] = {
     val deadPlayers = getDeadPlayers
     losers = losers ::: deadPlayers
     for (player <- players if !deadPlayers.contains(player)) yield player
@@ -123,13 +123,4 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
   private def areAllShipsDead(player: IPlayer): Boolean = (for (ship <- player.board.ships if !ship.initialized || !ship.isDead) yield ship).length == 0
   def getWinner: Option[IPlayer] = if (players.length == 1) Some(players(0)) else None;
 
-}
-
-object BattleshipController {
-  def setupGame: List[Player] = {
-    val size = 10
-    val ships = List(Ship(2))
-    val gamefield = Gamefield(Array.fill[IField](size, size) { Field(false) }, ships)
-    List(Player(gamefield, "player0"), Player(gamefield, "player1"))
-  }
 }
