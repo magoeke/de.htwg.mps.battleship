@@ -1,6 +1,6 @@
 package de.htwg.mps.battleship.controller.command
 
-import de.htwg.mps.battleship.model.Point
+import de.htwg.mps.battleship.Point
 
 trait Command {}
 case class Fire(point: Point) extends Command

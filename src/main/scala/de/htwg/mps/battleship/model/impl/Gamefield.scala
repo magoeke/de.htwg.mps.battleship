@@ -1,6 +1,7 @@
 package scala.de.htwg.mps.battleship.model.impl
 
-import de.htwg.mps.battleship.model.{IBoard, IField, IShip, Point}
+import de.htwg.mps.battleship.Point
+import de.htwg.mps.battleship.model.{IBoard, IField, IShip}
 
 case class Gamefield(field: Array[Array[IField]], ships: List[IShip]) extends IBoard {
 

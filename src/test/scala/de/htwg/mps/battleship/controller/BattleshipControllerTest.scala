@@ -1,9 +1,9 @@
 package de.htwg.mps.battleship.controller
 
+import de.htwg.mps.battleship.Point
 import org.scalatest._
 import org.scalatest.Matchers._
 import de.htwg.mps.battleship.controller.command._
-import de.htwg.mps.battleship.model.Point
 import de.htwg.mps.battleship.model.IPlayer
 import de.htwg.mps.battleship.model._
 

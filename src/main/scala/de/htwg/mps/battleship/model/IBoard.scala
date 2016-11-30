@@ -1,5 +1,7 @@
 package de.htwg.mps.battleship.model
 
+import de.htwg.mps.battleship.Point
+
 trait IBoard {
   def field: Array[Array[IField]]
   def ships: List[IShip]

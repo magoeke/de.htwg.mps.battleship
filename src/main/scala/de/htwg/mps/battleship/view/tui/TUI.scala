@@ -1,9 +1,9 @@
 package de.htwg.mps.battleship.view.tui
 
 import akka.actor.{Actor, ActorRef}
+import de.htwg.mps.battleship.Point
 import de.htwg.mps.battleship.controller._
 import de.htwg.mps.battleship.controller.command._
-import de.htwg.mps.battleship.model.Point
 
 import scala.io.StdIn
 

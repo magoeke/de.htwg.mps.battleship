@@ -1,10 +1,11 @@
 package de.htwg.mps.battleship.controller
 
+import de.htwg.mps.battleship.Point
 import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model._
 
 import scala.collection.mutable.ListBuffer
-import scala.de.htwg.mps.battleship.model.impl.{ Field, Gamefield, Player, Ship }
+import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
 object TurnCount extends Enumeration { val INC, QUIT = Value }
 
