@@ -1,8 +1,9 @@
 package de.htwg.mps.battleship
 
 import akka.actor.{ActorSystem, Props}
-import de.htwg.mps.battleship.controller.{ControllerFactory}
+import de.htwg.mps.battleship.controller.ControllerFactory
 import de.htwg.mps.battleship.model.{IField, IPlayer}
+import de.htwg.mps.battleship.view.gui.GUI
 import de.htwg.mps.battleship.view.tui.TUI
 
 import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
@@ -14,6 +15,12 @@ object Battleship {
     val controller = ControllerFactory.create(actorSystem, setUp())
     actorSystem.actorOf(Props(new TUI(controller, true)))
     println("Started Game")
+
+    new Thread(new Runnable {
+      override def run() = {
+        new GUI(controller).main(Array())
+      }
+    }).start()
   }
 
   def setUp(): List[IPlayer] = {

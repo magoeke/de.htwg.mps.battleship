@@ -19,4 +19,7 @@ libraryDependencies ++= {
 libraryDependencies += "org.scala-lang" % "scala-swing" % "2.10+"
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4-SNAPSHOT"
 
+libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.60-R9"
+
+
 fork in run := true
