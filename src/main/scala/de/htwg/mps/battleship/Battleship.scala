@@ -23,10 +23,11 @@ object Battleship {
     }).start()
   }
 
-  def setUp(): List[IPlayer] = {
+  def setUp(): List[IPlayer] = setUp("player0", "player1")
+  def setUp(playerOne: String, playerTwo: String): List[IPlayer] = {
     val size = 10
     val ships = List(Ship(2))
     val gamefield = Gamefield(Array.fill[IField](size, size) { Field(false) }, ships)
-    List(Player(gamefield, "player0"), Player(gamefield, "player1"))
+    List(Player(gamefield, playerOne), Player(gamefield, playerTwo))
   }
 }

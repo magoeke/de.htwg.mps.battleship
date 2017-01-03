@@ -9,6 +9,10 @@ import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
 object TurnCount extends Enumeration { val INC, QUIT = Value }
 
+object BattleshipController {
+
+}
+
 class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController {
   require(start_players.length >= 2, "Number of player must be greater or equals two!")
 
@@ -100,19 +104,23 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
   /*
    * Represents state of all boards with enums.
    */
-  def boardsView: List[Array[Array[FieldState.Value]]] = {
-    players.map(p => p.board.field.map(row => row.map(field => chooseFieldState(p.board.ships, field, p))))
+  def boardsView: List[Array[Array[FieldState.Value]]] = { boardsView(currentPlayer) }
+  def boardsView(chosen: String): List[Array[Array[FieldState.Value]]] = {
+    boardsView(players.filter(_.name == chosen)(0))
+  }
+  def boardsView(chosen: IPlayer): List[Array[Array[FieldState.Value]]] = {
+    players.map(p => p.board.field.map(row => row.map(field => chooseFieldState(p.board.ships, field, p, chosen))))
   }
 
   /*
    * Represents the current field on board as an enumeration.
    */
-  private def chooseFieldState(ships: List[IShip], field: IField, player: IPlayer): FieldState.Value = {
+  private def chooseFieldState(ships: List[IShip], field: IField, player: IPlayer, chosen: IPlayer): FieldState.Value = {
     val shipFieldL = ships.flatMap(ship => ship.pos.map(pos => pos eq field))
     val shipField = shipFieldL.contains(true)
 
     if (shipField && field.shot) { FieldState.HIT }
-    else if (shipField && !field.shot && player == currentPlayer) { FieldState.SHIP }
+    else if (shipField && !field.shot && player == chosen) { FieldState.SHIP }
     else if (!shipField && field.shot) { FieldState.MISS }
     else { FieldState.EMPTY }
   }

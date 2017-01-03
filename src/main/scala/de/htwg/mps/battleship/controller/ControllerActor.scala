@@ -1,7 +1,7 @@
 package de.htwg.mps.battleship.controller
 
-import akka.actor.{Actor, ActorRef, Kill}
-import de.htwg.mps.battleship.controller.command.Command
+import akka.actor.{Actor, ActorRef}
+import de.htwg.mps.battleship.controller.command._
 import de.htwg.mps.battleship.model.IPlayer
 
 import scala.collection.mutable.ListBuffer
@@ -24,6 +24,9 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
         context.system.terminate()
       }
     }
+    case Ships => sender() ! AShips(controller.setableShips.map(_.size))
+    case Boards(view) => sender() ! ABoards(controller.boardsView(view))
+    case Player => sender() ! APlayer(controller.currentPlayer.name)
   }
 
   private def createUpdateUI() = {
