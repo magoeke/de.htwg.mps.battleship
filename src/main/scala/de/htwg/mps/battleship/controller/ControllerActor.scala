@@ -18,8 +18,7 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
 
   override def receive: Receive = {
     case RegisterUI => userInterfaces += sender; sender() ! createUpdateUI(sender())
-    case RegisterUI(player) => register(player, sender()); sender() ! createUpdateUI(sender())
-    case DeregisterUI => deregister(sender())
+    case DeregisterUI => userInterfaces -= sender
     case command: Command => controller.handleCommand(command) match {
       case true => userInterfaces.foreach(actor => actor ! createUpdateUI(actor))
       case _ => {
@@ -28,22 +27,13 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
         context.system.terminate()
       }
     }
-    case Ships => sender() ! AShips(controller.setableShips.map(_.size))
-    case Boards(view) => sender() ! ABoards(controller.boardsView(view))
-    case Player => sender() ! APlayer(controller.currentPlayer.name)
   }
-
-  private def register(player: String, sender: ActorRef) = {
-    userInterfaces += sender
-    actorToUser += (sender -> player)
-  }
-
-  private def deregister(sender: ActorRef) = userInterfaces -= sender; actorToUser -= sender
 
   private def createUpdateUI(actor: ActorRef) = {
     val player: String = actorToUser.getOrElse(actor, controller.currentPlayer.name)
-    UpdateUI(controller.currentPlayer.name, controller.setableShips.map(_.size), controller.boardsView(player))
+    UpdateUI(controller.currentPlayer.name, controller.collectGameInformation)
   }
 }
 
-case class UpdateUI(currentPlayer: String, setableShips: List[Int], boards: List[Array[Array[FieldState.Value]]])
+case class GameInformation(player: String, setableShips: List[Int], boards: List[Array[Array[FieldState.Value]]])
+case class UpdateUI(currentPlayer: String, gameInformation: List[GameInformation])

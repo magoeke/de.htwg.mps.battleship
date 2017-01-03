@@ -9,10 +9,6 @@ import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
 object TurnCount extends Enumeration { val INC, QUIT = Value }
 
-object BattleshipController {
-
-}
-
 class BattleshipController(val start_players: List[IPlayer]) extends IBattleshipController {
   require(start_players.length >= 2, "Number of player must be greater or equals two!")
 
@@ -105,9 +101,6 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
    * Represents state of all boards with enums.
    */
   def boardsView: List[Array[Array[FieldState.Value]]] = { boardsView(currentPlayer) }
-  def boardsView(chosen: String): List[Array[Array[FieldState.Value]]] = {
-    boardsView(players.filter(_.name == chosen)(0))
-  }
   def boardsView(chosen: IPlayer): List[Array[Array[FieldState.Value]]] = {
     players.map(p => p.board.field.map(row => row.map(field => chooseFieldState(p.board.ships, field, p, chosen))))
   }
@@ -125,7 +118,8 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
     else { FieldState.EMPTY }
   }
 
-  def setableShips: List[IShip] = for (ship <- currentPlayer.board.ships if !ship.initialized) yield ship
+  def setableShips: List[IShip] = setableShips(currentPlayer)
+  def setableShips(player: IPlayer): List[IShip] = for (ship <- player.board.ships if !ship.initialized) yield ship
   def currentPlayer: IPlayer = players(turn % players.length)
 
   private def removeDeadPlayers: List[IPlayer] = {
@@ -138,4 +132,7 @@ class BattleshipController(val start_players: List[IPlayer]) extends IBattleship
   private def areAllShipsDead(player: IPlayer): Boolean = (for (ship <- player.board.ships if !ship.initialized || !ship.isDead) yield ship).length == 0
   def getWinner: Option[IPlayer] = if (players.length == 1) Some(players(0)) else None;
 
+  override def collectGameInformation: List[GameInformation] = {
+    players.map(player => GameInformation(player.name, setableShips(player).map(_.size), boardsView(player)))
+  }
 }

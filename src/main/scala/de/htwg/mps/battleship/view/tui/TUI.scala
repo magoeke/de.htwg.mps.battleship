@@ -16,9 +16,10 @@ class TUI(val controller: ActorRef, val input: Boolean) extends Actor {
   }
 
   def update(infos: UpdateUI): Unit = {
-    infos.boards.foreach(printGamefield(_))
+    val gameInformation = infos.gameInformation.filter(info => info.player == infos.currentPlayer).head
+    gameInformation.boards.foreach(printGamefield(_))
     println("Playername: " + infos.currentPlayer)
-    println("SetableShips: " + infos.setableShips.map(" " + _ + " "))
+    println("SetableShips: " + gameInformation.setableShips.map(" " + _ + " ").toString().drop(4))
     println("Possible commands: \"new\", \"set X,X end X,X\", \"fire X,X\", \"quit\"")
   }
 
