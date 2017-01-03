@@ -30,8 +30,8 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
   }
 
   private def createUpdateUI() = {
-    UpdateUI(controller.currentPlayer.name, controller.setableShips.toString(), controller.boardsView)
+    UpdateUI(controller.currentPlayer.name, controller.setableShips.map(_.size), controller.boardsView)
   }
 }
 
-case class UpdateUI(playerName: String, setableShips: String, boards: List[Array[Array[FieldState.Value]]])
+case class UpdateUI(currentPlayer: String, setableShips: List[Int], boards: List[Array[Array[FieldState.Value]]])
