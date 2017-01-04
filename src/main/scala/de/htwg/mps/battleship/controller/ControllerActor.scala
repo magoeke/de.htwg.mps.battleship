@@ -23,7 +23,7 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
       case true => userInterfaces.foreach(actor => actor ! createUpdateUI(actor))
       case _ => {
         val winner = controller.getWinner
-        if(winner.isDefined) { userInterfaces.foreach(_ ! winner.get.name) }
+        if(winner.isDefined) { userInterfaces.foreach(_ ! Winner(winner.get.name)) }
         context.system.terminate()
       }
     }
@@ -37,3 +37,4 @@ class ControllerActor(val players: List[IPlayer]) extends Actor {
 
 case class GameInformation(player: String, setableShips: List[Int], boards: List[Array[Array[FieldState.Value]]])
 case class UpdateUI(currentPlayer: String, gameInformation: List[GameInformation])
+case class Winner(player: String)

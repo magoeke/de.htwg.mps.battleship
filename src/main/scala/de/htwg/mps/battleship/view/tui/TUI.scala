@@ -12,7 +12,7 @@ class TUI(val controller: ActorRef, val input: Boolean) extends Actor {
 
   override def receive: Receive = {
     case infos: UpdateUI => update(infos); if(input) {context.children.foreach(_ ! "")}
-    case winner: String => println(winner + " won!")
+    case Winner(player) => println(player + " won!")
   }
 
   def update(infos: UpdateUI): Unit = {
