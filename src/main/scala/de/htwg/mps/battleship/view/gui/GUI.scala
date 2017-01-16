@@ -4,6 +4,8 @@ import akka.actor.ActorRef
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 
+import de.htwg.mps.battleship.controller.UpdateUI
+
 import scala.swing.Reactor
 import scalafx.Includes._
 import scalafx.application.JFXApp
@@ -50,5 +52,9 @@ class GUI (val controller: ActorRef) extends JFXApp{
         top = menuBar
       }
     }
+  }
+
+  def update(infos: UpdateUI){
+
   }
 }
