@@ -4,13 +4,11 @@ import akka.actor.{Actor, ActorRef}
 import akka.actor.Actor.Receive
 import de.htwg.mps.battleship.controller.{RegisterUI, UpdateUI, Winner}
 
-import scala.io.StdIn
-
-class GUIInput (val controller: ActorRef, args: Array[String], val input: Boolean) extends Actor{
+class GUIHelper(val controller: ActorRef, args: Array[String], val input: Boolean) extends Actor{
   def this(controller: ActorRef, args: Array[String]) { this(controller, args, false) }
   controller ! RegisterUI
 
-  val gui = new GUI(controller)
+  val gui = new GUIBoarder(controller)
   gui.main(args)
 
   override def receive: Receive = {
