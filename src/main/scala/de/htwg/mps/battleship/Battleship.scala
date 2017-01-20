@@ -16,11 +16,6 @@ object Battleship {
     actorSystem.actorOf(Props(new TUI(controller, true)))
     println("Started Game")
     actorSystem.actorOf(Props(new GUIHelper(controller, args)))
-//    new Thread(new Runnable {
-//      override def run() = {
-//        new GUI(controller).main(Array())
-//      }
-//    }).start()
   }
 
   def setUp(): List[IPlayer] = setUp("player0", "player1")
