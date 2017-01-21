@@ -266,28 +266,6 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
       }
   }
 
-
-  //val file = new File("media/StartScreen.flv")
-
-  //val mediaPlayers = new MediaPlayer(new Media(new File("media/StartScreen.flv").toURI.toString())){
-  //  autoPlay = true
-  //}
-  //val mediaViews = new MediaView {
-  //  mediaPlayer = mediaPlayers
-  //  fitWidth = 800
-  //  fitHeight = 400
-  //
-  //  translateX = fitWidth()  / 2 + 200
-  //  translateY = fitHeight() / 2 + 200
-  //  preserveRatio = true
-  //}
-
-  // def gamefiel(infos: GameInformation) = for (col <- infos.boards.length; row <- infos.boards.length) yield {
-
-  //fill = Color.Blue
-  //stroke = Color.Burlywood
-
-
   val borderGameField = new BorderPane() {
     minHeight = 20
     left = new Label {
