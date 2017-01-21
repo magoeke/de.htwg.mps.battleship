@@ -6,6 +6,7 @@ import de.htwg.mps.battleship.controller.{RegisterUI, UpdateUI, Winner}
 
 class GUIHelper(val controller: ActorRef, args: Array[String], val input: Boolean) extends Actor{
   def this(controller: ActorRef, args: Array[String]) { this(controller, args, false) }
+
   controller ! RegisterUI
 
   val gui = new GUIBoarder(controller)
