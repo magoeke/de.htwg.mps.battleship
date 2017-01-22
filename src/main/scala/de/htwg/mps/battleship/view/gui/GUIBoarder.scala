@@ -43,7 +43,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     visible = visibility
     onAction = (e: ActionEvent) => {
       if (setShips.length > 1) {
-        if(setShips.last.x == setShips(setShips.length - 2).x || setShips.last.y == setShips(setShips.length - 2).y) controller ! SetShip(setShips.last, setShips(setShips.length - 2)) else reDrawSplit()
+        if(setShips(0).x == setShips(1).x || setShips(0).y == setShips(1).y) controller ! {getPoints(setShips(0),setShips(1)) match { case (p1: Point, p2: Point)=> SetShip(p1, p2)}} else reDrawSplit()
         setShips = List()
       }
     }
@@ -57,7 +57,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     visible = visibility
     onAction = (e: ActionEvent) => {
       if (fireShips.length > 0) {
-        controller ! Fire(fireShips.last)
+        controller ! Fire(fireShips(0))
         fireShips = List()
       }
     }
@@ -285,7 +285,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
   def reDraw(): Unit = {
     if (!this.gameInformation.boards.isEmpty ){
 
-      reDrawSplit()
+
 
       if (this.gameInformation.setableShips.isEmpty) {
         reg1.children = getMenuBarLeft(false, true, false,0,0,0,0,0)
@@ -298,6 +298,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
           this.gameInformation.setableShips.filter(_==5).length)
       }
     }
+    reDrawSplit()
   }
 
   def update(infos: UpdateUI): Unit = {
@@ -308,6 +309,10 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
       reDraw()
      //reDraw()
 
+  }
+
+  private def getPoints(p1 : Point, p2 : Point):(Point, Point)={
+    if(p1.x > p2.x) Tuple2(p2,p1) else Tuple2(p1, p2)
   }
 
   case class ownRectagle(p: Point) extends Rectangle()
