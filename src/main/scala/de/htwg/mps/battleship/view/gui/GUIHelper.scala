@@ -12,7 +12,7 @@ class GUIHelper(val controller: ActorRef, gUIBoarder: GUIBoarder, val input: Boo
 
   override def receive: Receive = {
     case infos: UpdateUI => Platform.runLater(gUIBoarder.update(infos)); if(input) {context.children.foreach(_ ! "")}
-    case Winner(player) => println(player + " won!")
+    case Winner(player) => Platform.runLater(gUIBoarder.win())
   }
 
   //gui.launch()

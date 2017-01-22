@@ -23,6 +23,7 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.media.{Media, MediaPlayer, MediaView}
 import scalafx.scene.paint.{Color, LinearGradient, Stops}
 import scalafx.scene.shape.Rectangle
+import scalafx.scene.text.Font
 import scalafx.stage.{Popup, PopupWindow}
 
 class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
@@ -57,19 +58,15 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     visible = visibility
     onAction = (e: ActionEvent) => {
       if (fireShips.length > 0) {
-        controller ! Fire(fireShips(0))
-        fireShips = List()
-        new Popup{
-          content.add(popupDialog)
-          show(stage)
-        }
+        drawNextPlayer()
+        visible = false
       }
     }
   }
 
   def popupWindow: List[Node] = List(new ProgressIndicator {
-    prefWidth = 50
-    prefHeight = 50
+    prefWidth = 100
+    prefHeight = 100
   }, new Button {
     minWidth = 240
     minHeight = 30
@@ -81,15 +78,19 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     minHeight = 30
   }
   val popupSpinner = new ProgressIndicator {
-    maxWidth = 50
-    maxHeight = 50
+    maxWidth = 100
+    maxHeight = 100
   }
 
-  val popupDialog = new BorderPane {
-    center = popupSpinner
-    bottom = new Button {
-      alignmentInParent = Pos.Center
-    }
+  val popupDialog = new VBox {
+    alignment = Pos.TopCenter
+
+    children = List(popupSpinner,new Button {
+      text = "Next Player"
+      autosize()
+      alignment = Pos.Center
+      onAction = (e: ActionEvent) => {controller ! Fire(fireShips(0)); fireShips = List()}
+      })
     //buttonTypes.add(ButtonType.Next)
     //content.add(popupButton)
 
@@ -286,6 +287,11 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     if(this.gameInformation.player.equals("player0")) splitPanel.items ++= Seq(reg1, reg2(this.gameInformation.player, this.gameInformation.boards(0), this.gameInformation.boards(1))) else splitPanel.items ++= Seq(reg1, reg2(this.gameInformation.player, this.gameInformation.boards(1), this.gameInformation.boards(0)))
   }
 
+  def drawNextPlayer() = {
+    splitPanel.items.clear()
+    splitPanel.items ++= Seq(reg1, popupDialog)
+  }
+
   def reDraw(): Unit = {
     if (!this.gameInformation.boards.isEmpty ){
       if (this.gameInformation.setableShips.isEmpty) {
@@ -310,6 +316,20 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
       reDraw()
      //reDraw()
 
+  }
+
+  def win()={
+    splitPanel.items.clear()
+    splitPanel.items ++= Seq(reg1, winPanel)
+  }
+
+  def winPanel = new VBox{
+    alignment = Pos.TopCenter
+    children = new Label {
+      text = gameInformation.player + " has won!"
+      font = new Font("Arial", 30)
+    }
+    autosize()
   }
 
   private def getPoints(p1 : Point, p2 : Point):(Point, Point)={
