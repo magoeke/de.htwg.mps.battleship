@@ -9,6 +9,7 @@ import de.htwg.mps.battleship.Point
 import de.htwg.mps.battleship.controller._
 import de.htwg.mps.battleship.controller.command.{Fire, NewGame, QuitGame, SetShip}
 
+import scala.util.Try
 import scalafx.Includes._
 import scalafx.application.{JFXApp, Platform}
 import scalafx.event
@@ -309,12 +310,10 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
   }
 
   def update(infos: UpdateUI): Unit = {
-      this.gameInformation = infos.gameInformation.filter(info => info.player == infos.currentPlayer).head
-    //reg2.children = gamefiel(gameInformation)
-    //
-    //timeout.duration
-      reDraw()
-     //reDraw()
+    this.gameInformation = infos.gameInformation.filter(info => info.player == infos.currentPlayer).head
+
+    // another cool bugfix
+    Try(reDraw())
 
   }
 
