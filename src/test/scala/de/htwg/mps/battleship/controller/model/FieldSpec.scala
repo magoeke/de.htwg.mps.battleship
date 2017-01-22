@@ -11,6 +11,10 @@ class FieldSpec extends ModelSpec{
     "should be true" in {
     field.shot should be (true)
     }
+
+    "should print" in {
+      field.toString should be("Field: (shot=" + field.shot.toString() + ")")
+    }
   }
 
   "A new not shotted Field" should {
@@ -18,6 +22,9 @@ class FieldSpec extends ModelSpec{
 
     "should be true" in {
       field.shot should be (false)
+    }
+    "should print" in {
+      field.toString should be("Field: (shot=" + field.shot.toString() + ")")
     }
   }
 }

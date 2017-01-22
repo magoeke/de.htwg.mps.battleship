@@ -17,13 +17,17 @@ class ShipSpec extends ModelSpec {
     "should have a status if inizialized" in {
       ship.initialized should be (false)
     }
+
+    "should print" in {
+      ship.toString should be("Ship(size=" + ship.size + ", initialized=" + ship.initialized + ")")
+    }
   }
 
   "A initialized Ship" should {
     //Ship with with Length and no position
     val shipPos =List(new Field(false), new Field(false))
-    val shipWithPos = new Ship(shipPos,shipPos.length,true)
-    "should have a size" in {5
+    val shipWithPos = Ship(shipPos)
+    "should have a size" in {
       shipWithPos.size should be (shipSize)
     }
     "should have a Pos" in {
@@ -32,5 +36,24 @@ class ShipSpec extends ModelSpec {
     "should have a status if inizialized" in {
       shipWithPos.initialized should be (true)
     }
+
+    "should be a Ship" in {
+      shipWithPos should be(Ship(shipPos))
+    }
+  }
+
+  val shipDeadPos =List(new Field(true), new Field(true))
+  val deadShip = new Ship(shipDeadPos, shipDeadPos.length, true)
+  "A dead Ship" in{
+    deadShip.isDead should be(true)
+  }
+
+  val copyShip =List(new Field(true), new Field(false))
+  "can be copied" in {
+    deadShip.copyShip(copyShip).pos should be(copyShip)
+  }
+
+  "should print" in {
+    deadShip.toString should be("Ship(size=" + deadShip.size + ", initialized=" + deadShip.initialized + ")")
   }
 }
