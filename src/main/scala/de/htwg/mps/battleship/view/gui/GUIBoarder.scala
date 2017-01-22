@@ -31,8 +31,9 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
   val startHeight = 800
   var setShips: List[Point] = List()
   var fireShips: List[Point] = List()
+  var gameInformation = new GameInformation(null, null, null)
   //var gameInformation : GameInformation
-  implicit val timeout = akka.util.Timeout(5, TimeUnit.SECONDS)
+  //implicit val timeout = akka.util.Timeout(5, TimeUnit.SECONDS)
 
   def buttonSetShips(visibility: Boolean) = new Button {
     text = "Set Ships"
@@ -42,7 +43,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     visible = visibility
     onAction = (e: ActionEvent) => {
       if (setShips.length > 1) {
-        controller ! SetShip(setShips(setShips.length - 2), setShips.last);
+        if(setShips.last.x == setShips(setShips.length - 2).x || setShips.last.y == setShips(setShips.length - 2).y) controller ! SetShip(setShips.last, setShips(setShips.length - 2)) else reDrawSplit()
         setShips = List()
       }
     }
@@ -116,9 +117,9 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     fitHeight = 35
   }
 
-  def getMenuBarLeft(visSet: Boolean, visFire: Boolean, visNext: Boolean): List[Node] = {
+  def getMenuBarLeft(visSet: Boolean, visFire: Boolean, visNext: Boolean, ship1toSet: Int, ship2toSet: Int,ship3toSet: Int,ship4toSet: Int,ship5toSet: Int): List[Node] = {
     List(buttonSetShips(visSet),
-      buttonFire(visFire), shipPanel(5, 1), shipPanel(4, 2), shipPanel(3, 2), shipPanel(2, 2), shipPanel(1, 2),
+      buttonFire(visFire), shipPanel(5, ship5toSet), shipPanel(4,  ship4toSet), shipPanel(3, ship3toSet), shipPanel(2, ship2toSet),
       buttonNext(visNext))
   }
 
@@ -127,19 +128,19 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     minWidth = 260
     maxWidth = 260
     vgap = 30
-    children = getMenuBarLeft(true,false, false)
+    children = getMenuBarLeft(true,false, false,0,0,0,0,0)
   }
 
   def rightSplit(playerBoard: Array[Array[FieldState.Value]], enemeyBoard: Array[Array[FieldState.Value]]) = new SplitPane {
 
-    items ++= Seq(game(Pos.TopLeft, Color.Green, false, playerBoard), game(Pos.TopRight, Color.Red, false, enemeyBoard))
+    items ++= Seq(game(Pos.TopLeft, Color.Green, false, playerBoard), game(Pos.TopRight, Color.OrangeRed, false, enemeyBoard))
   }
 
-  def reg2(playerBoard: Array[Array[FieldState.Value]], enemeyBoard: Array[Array[FieldState.Value]]) = new VBox {
+  def reg2(player: String, playerBoard: Array[Array[FieldState.Value]], enemeyBoard: Array[Array[FieldState.Value]]) = new VBox {
     children = List(new BorderPane() {
       minHeight = 20
       left = new Label {
-        text = "Current Player"
+        text = "Current Player: " + player
       }
       right = new Label {
         text = "Enemy Player"
@@ -161,7 +162,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     //background = backgroundImage
     orientation = Orientation.HORIZONTAL
     minHeight = Double.MaxValue
-    items ++= Seq(reg1, reg2(null, null))
+    items ++= Seq(reg1, reg2("",null, null))
     id = "hiddenSplitter"
     //stylesheets += hiddenSplitPaneCss
   }
@@ -186,7 +187,7 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
         content = List(new Button {
           text = "New Game"
           minWidth = 75
-          onAction = (e: ActionEvent) => children = List(topBar, splitPanel)
+          onAction = (e: ActionEvent) => {children = List(topBar, splitPanel); controller ! NewGame()}
         },
           new Button {
             text = "Exit Game"
@@ -214,35 +215,35 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     }
   }
 
-  def square(col: Int, row: Int, status: String, color: Color) = new ownRectagle(new Point(row, col)) {
+  def square(col: Int, row: Int, state: FieldState.Value, color: Color, board: Array[Array[FieldState.Value]]) = new ownRectagle(new Point(row, col)) {
     width = 70
     height = 70
-    if (status.equals(FieldState.HIT.toString))
-      fill = Color.Red
-    else if (status.equals(FieldState.MISS.toString))
-      fill = Color.Yellow
-    else if (status.equals(FieldState.EMPTY.toString))
-      fill = Color.LightBlue
-    else if (status.equals(FieldState.SHIP.toString))
-      fill = Color.Gray
-    else if (status.equals(FieldState.SHOT.toString))
-      fill = Color.Red
-
+    state match {
+      case FieldState.EMPTY =>  fill = Color.LightBlue
+      case FieldState.HIT => fill = Color.Red
+      case FieldState.MISS => fill = Color.Yellow
+      case FieldState.SHIP => fill = Color.Gray
+      case FieldState.SHOT => fill = Color.Red
+      case FieldState.SELECT => fill = color
+    }
 
     //if(fired)fill = Color.Red else fill = Color.Bisque
     //fill = Color.Bisque
     stroke = Color.Burlywood
     //fill <== when(hover) choose Color.Green otherwise Color.Bisque
     onMouseClicked = (e: MouseEvent) => {
-      if (status.equals(FieldState.EMPTY.toString)) {
+      if (state match {case FieldState.EMPTY => true }) {
         if (color.equals(Color.Green)) {
           setShips ::= p
           if (setShips.length > 2)
-            true
-        } else fireShips ::= p
-
-        true
-        fill = color
+            board(setShips(2).x)(setShips(2).y) = FieldState.EMPTY
+        } else {
+          fireShips ::= p
+          if (fireShips.length > 1)
+            board(fireShips(1).x)(fireShips(1).y) = FieldState.EMPTY
+        }
+        board(p.x)(p.y) = FieldState.SELECT
+        reDrawSplit()
       }
     }
   }
@@ -261,8 +262,8 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     for (i <- 0 to gameSize - 1)
       for (x <- 0 to gameSize - 1) {
         //GridPane.setConstraints(square(i,x,false, player), i, x)
-        val state = if (board != null) board(x)(i).toString else FieldState.EMPTY.toString
-        add(square(i, x, state, player), i, x)
+        val state = if (board != null) board(x)(i) else FieldState.EMPTY
+        add(square(i, x, state, player, board), i, x)
       }
   }
 
@@ -276,25 +277,35 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
     }
   }
 
-  def reDraw(gameInformation: GameInformation): Unit = {
-    if (!gameInformation.boards.isEmpty ){
+  def reDrawSplit(): Unit ={
+    splitPanel.items.clear()
+    if(this.gameInformation.player.equals("player0")) splitPanel.items ++= Seq(reg1, reg2(this.gameInformation.player, this.gameInformation.boards(0), this.gameInformation.boards(1))) else splitPanel.items ++= Seq(reg1, reg2(this.gameInformation.player, this.gameInformation.boards(1), this.gameInformation.boards(0)))
+  }
 
-      splitPanel.items.clear()
-      if(gameInformation.player.equals("player0")) splitPanel.items ++= Seq(reg1, reg2(gameInformation.boards(0), gameInformation.boards(1))) else splitPanel.items ++= Seq(reg1, reg2(gameInformation.boards(1), gameInformation.boards(0)))
+  def reDraw(): Unit = {
+    if (!this.gameInformation.boards.isEmpty ){
 
+      reDrawSplit()
 
-
-      if (gameInformation.setableShips.isEmpty)
-        reg1.children = getMenuBarLeft(false, true, false)
+      if (this.gameInformation.setableShips.isEmpty) {
+        reg1.children = getMenuBarLeft(false, true, false,0,0,0,0,0)
+      }else{
+        reg1.children = getMenuBarLeft(true, false, false,
+          this.gameInformation.setableShips.filter(_==1).length,
+          this.gameInformation.setableShips.filter(_==2).length,
+          this.gameInformation.setableShips.filter(_==3).length,
+          this.gameInformation.setableShips.filter(_==4).length,
+          this.gameInformation.setableShips.filter(_==5).length)
+      }
     }
   }
 
   def update(infos: UpdateUI): Unit = {
-    val gameInformation = infos.gameInformation.filter(info => info.player == infos.currentPlayer).head
+      this.gameInformation = infos.gameInformation.filter(info => info.player == infos.currentPlayer).head
     //reg2.children = gamefiel(gameInformation)
     //
     //timeout.duration
-      reDraw(gameInformation)
+      reDraw()
      //reDraw()
 
   }
