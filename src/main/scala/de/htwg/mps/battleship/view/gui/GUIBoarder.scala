@@ -59,6 +59,10 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
       if (fireShips.length > 0) {
         controller ! Fire(fireShips(0))
         fireShips = List()
+        new Popup{
+          content.add(popupDialog)
+          show(stage)
+        }
       }
     }
   }
@@ -284,9 +288,6 @@ class GUIBoarder(val controller: ActorRef, gameSize : Int) extends JFXApp {
 
   def reDraw(): Unit = {
     if (!this.gameInformation.boards.isEmpty ){
-
-
-
       if (this.gameInformation.setableShips.isEmpty) {
         reg1.children = getMenuBarLeft(false, true, false,0,0,0,0,0)
       }else{
