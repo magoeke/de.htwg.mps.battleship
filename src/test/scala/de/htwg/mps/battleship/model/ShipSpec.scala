@@ -21,6 +21,10 @@ class ShipSpec extends ModelSpec {
     "should print" in {
       ship.toString should be("Ship(size=" + ship.size + ", initialized=" + ship.initialized + ")")
     }
+
+    "shoube be a Ship"in{
+      ship shouldBe a[Ship]
+    }
   }
 
   "A initialized Ship" should {
@@ -39,6 +43,10 @@ class ShipSpec extends ModelSpec {
 
     "should be a Ship" in {
       shipWithPos should be(Ship(shipPos))
+    }
+
+    "shoube be a Ship"in{
+      shipWithPos shouldBe a[Ship]
     }
   }
 
