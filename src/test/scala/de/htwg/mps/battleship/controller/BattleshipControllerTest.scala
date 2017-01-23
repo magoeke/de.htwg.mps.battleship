@@ -89,6 +89,15 @@ class BattleshipControllerTest extends WordSpec {
         c.getWinner.isEmpty should be(true)
       }
 
+      "doesn't find a winner when not allships of an player are dead" in {
+        val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
+        c.handleCommand(SetShip(Point(1, 1), Point(2, 1)))
+        c.handleCommand(SetShip(Point(1, 1), Point(2, 1)))
+        c.handleCommand(Fire(Point(1, 1)))
+        c.handleCommand(Fire(Point(1, 1)))
+        c.getWinner.isEmpty should be(true)
+      }
+
       "find a winner when only one player is left" in {
         val c = new BattleshipController(BattleshipControllerTest.setupTest(1))
         println("---------------------")
