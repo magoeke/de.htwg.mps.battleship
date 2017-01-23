@@ -1,11 +1,10 @@
-package de.htwg.mps.battleship.controller.model
+package de.htwg.mps.battleship.model
 
-import de.htwg.mps.battleship.Point
-import de.htwg.mps.battleship.model.IField
+import de.htwg.mps.battleship.{Point, Spec}
 
 import scala.de.htwg.mps.battleship.model.impl.{Field, Gamefield, Player, Ship}
 
-class PlayerSpec extends ModelSpec{
+class PlayerSpec extends Spec{
   "A new player" should {
     val size = 10
     val ships = List (Ship (2))

@@ -1,9 +1,11 @@
-package de.htwg.mps.battleship.controller.model
+package de.htwg.mps.battleship.model
+
+import de.htwg.mps.battleship.Spec
 
 import scala.de.htwg.mps.battleship.model.impl.{Field, Ship}
 
 
-class ShipSpec extends ModelSpec {
+class ShipSpec extends Spec {
   val shipSize = 2
   "A not initialized Ship with Size " +shipSize should {
     //Ship with with Length and no position

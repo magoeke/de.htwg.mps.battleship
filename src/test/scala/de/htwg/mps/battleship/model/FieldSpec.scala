@@ -1,10 +1,11 @@
-package de.htwg.mps.battleship.controller.model
+package de.htwg.mps.battleship.model
 
+import de.htwg.mps.battleship.Spec
 
 import scala.de.htwg.mps.battleship.model.impl.Field
 
 
-class FieldSpec extends ModelSpec{
+class FieldSpec extends Spec{
   "A new shotted Field" should {
     val field = new Field(true)
 
