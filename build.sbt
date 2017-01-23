@@ -19,5 +19,7 @@ libraryDependencies ++= {
 libraryDependencies += "org.scala-lang" % "scala-swing" % "2.10+"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.1"
+libraryDependencies += "com.typesafe.akka" % "akka-testkit_2.11" % "2.4.12"
+
 
 libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.60-R9"
